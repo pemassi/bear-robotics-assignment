@@ -2,6 +2,9 @@
 
 This assignment is implemented a simple ATM controller.
 
+## Before you go
+This project skips implementing CURD operation.
+
 ## Prerequisites
 - Java 11
 - IntelliJ IDEA
