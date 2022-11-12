@@ -5,9 +5,9 @@ import javax.persistence.*
 
 @Entity
 class DebitCard(
-    cardNumber: String,
-    password: String,
-    salt: String,
+    cardNumber: String = (1000000000000000..9999999999999999).random().toString(),
+    pinNumber: String,
+    salt: String = (1000000000..9999999999).random().toString(),
 )
 {
     @Id
@@ -16,7 +16,7 @@ class DebitCard(
 
     val cardNumber: String = cardNumber
 
-    var hashedPinNumber: String = password
+    var hashedPinNumber: String = (pinNumber + salt).hashWithSHA512()
         private set
 
     var salt: String = salt

@@ -9,7 +9,6 @@ import io.pemassi.bearroboticsassignment.domain.entity.AccountTradeHistory
 import io.pemassi.bearroboticsassignment.domain.model.TradeType
 import io.pemassi.bearroboticsassignment.domain.repository.AccountRepository
 import io.pemassi.bearroboticsassignment.domain.repository.AccountTradeHistoryRepository
-import io.pemassi.kotlin.extensions.common.hashWithSHA512
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -23,7 +22,8 @@ class AccountService(
 {
     fun get(command: AccountGetCommand): AccountInfo
     {
-        val account = accountRepository.findByAccountNumber(command.accountNumber).orElseThrow()
+        val account = accountRepository.findByAccountNumber(command.accountNumber) ?:
+            throw NoSuchElementException()
 
         return accountMapper.of(account)
     }
@@ -33,24 +33,20 @@ class AccountService(
         // generate random account number
         val accountNumber = (1000000000..9999999999).random().toString()
 
-        // generate random salt
-        val salt = (1000000000..9999999999).random().toString()
-        val hashedPassword = (command.password + salt).hashWithSHA512()
-
-        val account = accountRepository.save(
+        val newAccount = accountRepository.save(
             Account(
                 accountNumber = accountNumber,
-                hashedPassword = hashedPassword,
-                salt = salt,
+                pinNumber = command.password
             )
         )
 
-        return accountMapper.of(account)
+        return accountMapper.of(newAccount)
     }
 
     fun withdraw(command: AccountWithdrawCommand): AccountTradeHistoryInfo
     {
-        val account = accountRepository.findByAccountNumber(command.accountNumber).orElseThrow()
+        val account = accountRepository.findByAccountNumber(command.accountNumber) ?:
+            throw NoSuchElementException()
 
         // validation balance
         val balance = getBalance(
@@ -59,7 +55,7 @@ class AccountService(
             )
         )
         if(balance < command.withdrawAmount)
-            throw Exception("Not enough balance")
+            throw IllegalArgumentException("Not enough balance")
 
         val accountTradeHistory = accountTradeHistoryRepository.save(
             AccountTradeHistory(
@@ -75,7 +71,8 @@ class AccountService(
 
     fun deposit(command: AccountDepositCommand): AccountTradeHistoryInfo
     {
-        val account = accountRepository.findByAccountNumber(command.accountNumber).orElseThrow()
+        val account = accountRepository.findByAccountNumber(command.accountNumber) ?:
+            throw NoSuchElementException()
 
         val accountTradeHistory = accountTradeHistoryRepository.save(
             AccountTradeHistory(
@@ -91,7 +88,8 @@ class AccountService(
 
     fun getBalance(command: AccountGetBalanceCommand): Long
     {
-        val account = accountRepository.findByAccountNumber(command.accountNumber).orElseThrow()
+        val account = accountRepository.findByAccountNumber(command.accountNumber) ?:
+            throw NoSuchElementException()
 
         return accountTradeHistoryRepository.getBalance(account)
     }

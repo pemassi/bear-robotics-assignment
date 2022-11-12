@@ -1,6 +1,7 @@
 package io.pemassi.bearroboticsassignment.domain.service
 
-import io.pemassi.bearroboticsassignment.domain.dto.command.*
+import io.pemassi.bearroboticsassignment.domain.dto.command.DebitCardGetAccountCommand
+import io.pemassi.bearroboticsassignment.domain.dto.command.DebitCardGetCommand
 import io.pemassi.bearroboticsassignment.domain.dto.info.AccountInfo
 import io.pemassi.bearroboticsassignment.domain.dto.info.DebitCardInfo
 import io.pemassi.bearroboticsassignment.domain.dto.mapper.AccountMapper
@@ -18,7 +19,7 @@ class DebitCardService(
     private val accountService: AccountService,
 )
 {
-    fun getDebitCard(command: DebitCardGetCommand): DebitCardInfo
+    fun get(command: DebitCardGetCommand): DebitCardInfo
     {
         val debitCard = debitCardRepository.findByCardNumber(command.cardNumber).orElseThrow()
 

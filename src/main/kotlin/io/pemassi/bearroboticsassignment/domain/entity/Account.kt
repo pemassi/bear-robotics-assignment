@@ -3,14 +3,13 @@ package io.pemassi.bearroboticsassignment.domain.entity
 import io.pemassi.bearroboticsassignment.domain.model.TradeType
 import io.pemassi.kotlin.extensions.common.hashWithSHA512
 import org.hibernate.Hibernate
-import org.springframework.boot.autoconfigure.security.SecurityProperties
 import javax.persistence.*
 
 @Entity
 class Account(
-    accountNumber: String,
-    hashedPassword: String,
-    salt: String,
+    accountNumber: String = (1000000000..9999999999).random().toString(),
+    pinNumber: String,
+    salt: String = (1000000000..9999999999).random().toString()
 )
 {
     @Id
@@ -20,7 +19,7 @@ class Account(
     var accountNumber: String = accountNumber
         private set
 
-    var hashedPassword: String = hashedPassword
+    var hashedPinNumber: String = (pinNumber + salt).hashWithSHA512()
         private set
 
     var salt: String = salt
@@ -32,10 +31,10 @@ class Account(
     @ManyToMany(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
     var debitCards: MutableList<DebitCard> = mutableListOf()
 
-    fun confirmPassword(password: String): Boolean
+    fun confirmPinNumber(pinNumber: String): Boolean
     {
-        val hashedPassword = (password + salt).hashWithSHA512()
-        return hashedPassword == this.hashedPassword
+        val pinNumber = (pinNumber + salt).hashWithSHA512()
+        return pinNumber == this.hashedPinNumber
     }
 
     fun withdraw(amount: Long, note: String): AccountTradeHistory

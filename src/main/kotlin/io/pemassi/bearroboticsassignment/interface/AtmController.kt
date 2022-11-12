@@ -20,7 +20,7 @@ class AtmController(
     ): DebitCardInfo
     {
         val command = DebitCardGetCommand(cardNumber)
-        val info = debitCardService.getDebitCard(command)
+        val info = debitCardService.get(command)
 
         return info
     }
@@ -59,10 +59,10 @@ class AtmController(
     fun withdraw(
         accountNumber: String,
         withdrawAmount: Long,
-        node: String,
+        note: String,
     ): AccountTradeHistoryInfo
     {
-        val command = AccountWithdrawCommand(accountNumber, withdrawAmount, node)
+        val command = AccountWithdrawCommand(accountNumber, withdrawAmount, note)
         val info = accountService.withdraw(command)
 
         return info
@@ -71,10 +71,10 @@ class AtmController(
     fun deposit(
         accountNumber: String,
         depositAmount: Long,
-        node: String,
+        note: String,
     ): AccountTradeHistoryInfo
     {
-        val command = AccountDepositCommand(accountNumber, depositAmount, node)
+        val command = AccountDepositCommand(accountNumber, depositAmount, note)
         val info = accountService.deposit(command)
 
         return info
